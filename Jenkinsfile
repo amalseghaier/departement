@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        NODEJS_HOME = "C:\\chemin\\vers\\NodeJS" // Mettez le chemin complet vers NodeJS
+        NODEJS_HOME = "C:\\Program Files\\nodejs" // Chemin complet vers l'installation de Node.js sur Windows
         PATH = "${env.NODEJS_HOME}\\bin;${env.PATH}"
         CHROME_BIN = 'C:\\chemin\\vers\\google-chrome.exe' // Chemin vers le binaire de Chrome
         DOCKER_HUB_REGISTRY = 'docker.io' // URL du registre Docker Hub
