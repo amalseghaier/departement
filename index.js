@@ -2,18 +2,20 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
+const cors = require('cors'); 
 const departementRoutes = require('./route/departementRoute');
 const sequelize = require('./modele/departementModel'); 
 require('dotenv').config();
 
 // Port d'écoute du serveur
-const PORT = process.env.PORT || 3006;
+const PORT = process.env.PORT || 3007;
 
 // Middleware pour parser le corps des requêtes en JSON
 app.use(bodyParser.json());
+app.use(cors());
 
 // Monter les routes du département sur l'application
-app.use('/departement', departementRoutes);
+app.use('', departementRoutes);
 
 sequelize.sync()
   .then(() => {
