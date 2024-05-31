@@ -2,10 +2,10 @@ pipeline {
     agent any
 
     environment {
-        NODEJS_HOME = tool name: 'NodeJS', type: 'jenkins.plugins.nodejs.tools.NodeJSInstallation'
-        PATH = "${env.NODEJS_HOME}/bin:${env.PATH}"
-        CHROME_BIN = '/usr/bin/google-chrome' // Path to Chrome binary
-        DOCKER_HUB_REGISTRY = 'docker.io' // Docker Hub registry URL
+        NODEJS_HOME = "C:\\Program Files\\nodejs" // Chemin complet vers l'installation de Node.js sur Windows
+        PATH = "${env.NODEJS_HOME}\\bin;${env.PATH}"
+        CHROME_BIN = 'C:\\chemin\\vers\\google-chrome.exe' // Chemin vers le binaire de Chrome
+        DOCKER_HUB_REGISTRY = 'docker.io' // URL du registre Docker Hub
     }
 
     stages {
@@ -16,51 +16,42 @@ pipeline {
         }
 
         stage('Install dependencies') {
-          steps {
-    sh '${NODEJS_HOME}/bin/npm install'
-    // sh '${NODEJS_HOME}/bin/npm install jest --save-dev'
-    // sh '${NODEJS_HOME}/bin/npm install bcrypt'
-}
+            steps {
+                bat "${NODEJS_HOME}\\npm install"
+                // bat "${NODEJS_HOME}\\npm install jest --save-dev"
+                // bat "${NODEJS_HOME}\\npm install bcrypt"
             }
-        
+        }
 
         stage('Fix Permissions') {
             steps {
-                // Fix permissions for the project directory and node_modules
-                sh 'chmod -R 777 .'
+                // Fixer les permissions pour le répertoire du projet et node_modules
+                bat 'icacls . /grant:r Jenkins:(OI)(CI)F /T /C'
             }
         }
-
 
         stage('Build') {
             steps {
-                // sh 'node app.js'
-                sh 'npm run build'
+                // bat 'node app.js'
+                bat 'npm run build'
             }
         }
 
-        // stage('Test') {
-        //     steps {
-        //         // Run Jest tests
-        //         sh 'npm test'
-        //     }
-        // }
-
         stage('Build Docker image') {
             steps {
-                sh 'docker build -t amalseghaier/departements:latest Dockerfile .'
-                // Tag the Docker image with a version
-                sh 'docker tag amalseghaier/departements:latest amalseghaier/departements:latest '
+                bat 'docker build -t amalseghaier/departements:latest Dockerfile .'
+                // Taguer l'image Docker avec une version
+                bat 'docker tag amalseghaier/departements:latest amalseghaier/departements:latest'
             }
         }
 
         stage('Deploy Docker image') {
             steps {
                 script {
-                    // Push Docker image to Docker Hub
+                    // Poussez l'image Docker vers Docker Hub
                     withCredentials([string(credentialsId: 'token', variable: 'DOCKER_TOKEN')]) {
                         docker.withRegistry('https://index.docker.io/v1/', '12') {
-                            // Push both the latest and tagged images
+                            // Poussez les images latest et taguées
                             docker.image('amalseghaier/departements:latest').push('latest')
                         }
                     }
@@ -72,12 +63,12 @@ pipeline {
     post {
         success {
             echo 'Build succeeded!'
-            // Add any success post-build actions here
+            // Ajoutez les actions post-build en cas de succès ici
         }
 
         failure {
             echo 'Build failed!'
-            // Add any failure post-build actions here
+            // Ajoutez les actions post-build en cas d'échec ici
         }
     }
 }
